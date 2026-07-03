@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Optimizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Prompt Optimizer</h1>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h2>Enter Prompt</h2>
+                <textarea 
+                    id="prompt-input" 
+                    placeholder="Type or paste your prompt here..."
+                    rows="6"
+                ></textarea>
+                <button id="optimize-btn" class="btn">Optimize</button>
+            </section>
+
+            <section class="results-section hidden" id="results-section">
+                <h2>Optimized Prompt</h2>
+                
+                <div class="result-item">
+                    <span class="result-label">Score:</span>
+                    <span class="result-value" id="score-value">0</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Category:</span>
+                    <span class="result-value" id="category-value">General</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Suggestions:</span>
+                    <span class="result-value" id="suggestions-value">No suggestions yet</span>
+                </div>
+
+                <div class="optimized-text">
+                    <h3>Optimized Text:</h3>
+                    <p id="optimized-prompt-text"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -3,19 +3,19 @@ import os
 
 # Configure Gemini API with secure API key loading
 api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY not found in environment variables. Please set it in .env file.")
+model = None
 
-genai.configure(api_key=api_key)
-
-# Create reusable Gemini client
-model = genai.GenerativeModel("gemini-1.5-flash")
+if api_key:
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
 def test_connection():
     """
     Test the Gemini API connection by sending a simple "Hello" message.
     Returns the response from the model.
     """
+    if not model:
+        raise Exception("Gemini API not configured. Please set GEMINI_API_KEY in .env file.")
     try:
         response = model.generate_content("Hello")
         return response.text
@@ -35,6 +35,9 @@ def optimize_prompt(prompt):
     Raises:
         Exception: If the optimization fails
     """
+    if not model:
+        raise Exception("Gemini API not configured. Please set GEMINI_API_KEY in .env file.")
+    
     try:
         optimization_instruction = f"""
         You are an expert prompt engineer. Your task is to optimize the following prompt for better AI responses.

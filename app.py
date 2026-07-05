@@ -2,8 +2,19 @@ from flask import Flask, render_template, request, jsonify
 from utils.gemini import optimize_prompt
 from utils.score import calculate_prompt_score
 from utils.category import categorize_prompt
+import sqlite3
+import os
+import json
 
 app = Flask(__name__)
+
+# Database path
+DB_PATH = os.path.join(os.path.dirname(__file__), 'database', 'prompts.db')
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route("/")
 def home():
@@ -22,12 +33,22 @@ def optimize():
         optimized_prompt = optimize_prompt(prompt)
         
         # Calculate score and category
-        score = calculate_prompt_score(prompt)
+        scores = calculate_prompt_score(prompt)
         category = categorize_prompt(prompt)
+        
+        # Save to database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO prompts (original_prompt, optimized_prompt, category, score, model_used)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (prompt, optimized_prompt, category, scores['total'], 'gemini-1.5-flash'))
+        conn.commit()
+        conn.close()
         
         return jsonify({
             "optimized_prompt": optimized_prompt,
-            "score": score,
+            "score": scores,
             "category": category,
             "status": "success"
         })

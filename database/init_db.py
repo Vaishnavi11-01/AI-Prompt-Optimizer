@@ -13,6 +13,7 @@ def init_database():
             optimized_prompt TEXT NOT NULL,
             category TEXT NOT NULL,
             score REAL NOT NULL,
+            model_used TEXT DEFAULT 'gemini-1.5-flash',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')

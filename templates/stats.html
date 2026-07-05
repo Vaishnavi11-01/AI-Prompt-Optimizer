@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - AI Prompt Optimizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Statistics Dashboard</h1>
+            <div class="nav-buttons">
+                <a href="/" class="btn-secondary">Optimizer</a>
+                <a href="/history" class="btn-secondary">History</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="summary-card">
+                    <h3>Total Prompts</h3>
+                    <div class="summary-value" id="total-prompts">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Average Score</h3>
+                    <div class="summary-value" id="average-score">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Most Used Category</h3>
+                    <div class="summary-value" id="most-used-category">N/A</div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-card">
+                    <h3>Category Distribution</h3>
+                    <canvas id="category-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Monthly Usage</h3>
+                    <canvas id="usage-chart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='stats.js') }}"></script>
+</body>
+</html>

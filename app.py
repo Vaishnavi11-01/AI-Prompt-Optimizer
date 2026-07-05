@@ -24,6 +24,10 @@ def home():
 def history():
     return render_template("history.html")
 
+@app.route("/stats")
+def stats():
+    return render_template("stats.html")
+
 @app.route("/optimize", methods=["POST"])
 def optimize():
     data = request.get_json()

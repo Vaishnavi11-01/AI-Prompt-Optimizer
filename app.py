@@ -19,19 +19,20 @@ def optimize():
     
     try:
         # Optimize the prompt using Gemini
-        optimized_text = optimize_prompt(prompt)
+        optimized_prompt = optimize_prompt(prompt)
         
         # Calculate score and category
         score = calculate_prompt_score(prompt)
         category = categorize_prompt(prompt)
         
         return jsonify({
-            "optimized_text": optimized_text,
+            "optimized_prompt": optimized_prompt,
             "score": score,
-            "category": category
+            "category": category,
+            "status": "success"
         })
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e), "status": "error"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

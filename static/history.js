@@ -2,6 +2,7 @@
 const searchInput = document.getElementById('search-input');
 const historyList = document.getElementById('history-list');
 const filterButtons = document.querySelectorAll('.filter-btn');
+const exportBtn = document.getElementById('export-btn');
 
 let allHistory = [];
 let currentFilter = 'all';
@@ -11,6 +12,10 @@ searchInput.addEventListener('input', handleSearch);
 filterButtons.forEach(btn => {
     btn.addEventListener('click', handleFilter);
 });
+
+if (exportBtn) {
+    exportBtn.addEventListener('click', exportToJSON);
+}
 
 // Load history on page load
 loadHistory();
@@ -191,6 +196,24 @@ function formatDate(date) {
 function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+}
+
+async function exportToJSON() {
+    try {
+        const response = await fetch('/export/json');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'prompt_history.json';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error('Error exporting JSON:', error);
+        alert('Failed to export JSON');
+    }
 }
 
 // Check for reused prompt on page load

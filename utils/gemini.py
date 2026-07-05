@@ -10,3 +10,14 @@ genai.configure(api_key=api_key)
 
 # Create reusable Gemini client
 model = genai.GenerativeModel("gemini-1.5-flash")
+
+def test_connection():
+    """
+    Test the Gemini API connection by sending a simple "Hello" message.
+    Returns the response from the model.
+    """
+    try:
+        response = model.generate_content("Hello")
+        return response.text
+    except Exception as e:
+        raise Exception(f"Gemini API connection test failed: {str(e)}")

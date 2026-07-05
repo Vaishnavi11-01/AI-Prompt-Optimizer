@@ -2,7 +2,18 @@
 
 A web application that uses Google Gemini AI to optimize and improve your prompts for better AI responses.
 
-## Features
+## Current Status
+
+- ✅ Frontend completed
+- ✅ Flask backend setup
+- ✅ Database initialized
+- ✅ Project structure established
+- 🚧 Gemini API integration in progress
+- 🚧 Prompt optimization under development
+- 🚧 Prompt quality scoring in progress
+- 🚧 Category detection in progress
+
+## Planned Features
 
 - **Prompt Optimization**: Uses Google Gemini AI to enhance your prompts for clarity, specificity, and effectiveness
 - **Quality Scoring**: Calculates a quality score (0-100) for prompts based on various criteria

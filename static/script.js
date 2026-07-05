@@ -3,12 +3,27 @@ const promptInput = document.getElementById('prompt-input');
 const optimizeBtn = document.getElementById('optimize-btn');
 const resultsSection = document.getElementById('results-section');
 const scoreValue = document.getElementById('score-value');
+const scoreLabel = document.getElementById('score-label');
 const categoryValue = document.getElementById('category-value');
-const suggestionsValue = document.getElementById('suggestions-value');
+const suggestionsList = document.getElementById('suggestions-list');
 const optimizedPromptText = document.getElementById('optimized-prompt-text');
+const copyBtn = document.getElementById('copy-btn');
+
+// Score breakdown elements
+const lengthScore = document.getElementById('length-score');
+const lengthProgress = document.getElementById('length-progress');
+const clarityScore = document.getElementById('clarity-score');
+const clarityProgress = document.getElementById('clarity-progress');
+const specificityScore = document.getElementById('specificity-score');
+const specificityProgress = document.getElementById('specificity-progress');
+const contextScore = document.getElementById('context-score');
+const contextProgress = document.getElementById('context-progress');
+const formatScore = document.getElementById('format-score');
+const formatProgress = document.getElementById('format-progress');
 
 // Event Listeners
 optimizeBtn.addEventListener('click', optimizePrompt);
+copyBtn.addEventListener('click', copyToClipboard);
 
 // Optimize Prompt
 async function optimizePrompt() {
@@ -48,17 +63,8 @@ async function optimizePrompt() {
         const data = await response.json();
         console.log('Backend response:', data);
         
-        // Use real data from backend
-        const score = data.score;
-        const category = data.category;
-        const suggestions = generateSuggestions(prompt);
-        const optimizedText = data.optimized_prompt;
-        
         // Display results
-        scoreValue.textContent = score;
-        categoryValue.textContent = category;
-        suggestionsValue.textContent = suggestions;
-        optimizedPromptText.textContent = optimizedText;
+        displayResults(data, prompt);
         
         resultsSection.classList.remove('hidden');
         
@@ -73,6 +79,87 @@ async function optimizePrompt() {
         optimizeBtn.disabled = false;
         optimizeBtn.textContent = 'Optimize';
     }
+}
+
+function displayResults(data, prompt) {
+    const scores = data.score;
+    const category = data.category;
+    const suggestions = generateSuggestions(prompt);
+    const optimizedText = data.optimized_prompt;
+    
+    // Display overall score
+    scoreValue.textContent = Math.round(scores.total);
+    scoreLabel.textContent = getScoreLabel(scores.total);
+    
+    // Display category
+    categoryValue.textContent = category;
+    
+    // Display score breakdown
+    displayScoreBreakdown(scores);
+    
+    // Display suggestions
+    displaySuggestions(suggestions);
+    
+    // Display optimized text
+    optimizedPromptText.textContent = optimizedText;
+}
+
+function displayScoreBreakdown(scores) {
+    // Length (max 20)
+    lengthScore.textContent = `${scores.length}/20`;
+    lengthProgress.style.width = `${(scores.length / 20) * 100}%`;
+    
+    // Clarity (max 15)
+    clarityScore.textContent = `${scores.clarity}/15`;
+    clarityProgress.style.width = `${(scores.clarity / 15) * 100}%`;
+    
+    // Specificity (max 15)
+    specificityScore.textContent = `${scores.specificity}/15`;
+    specificityProgress.style.width = `${(scores.specificity / 15) * 100}%`;
+    
+    // Context (max 10)
+    contextScore.textContent = `${scores.context}/10`;
+    contextProgress.style.width = `${(scores.context / 10) * 100}%`;
+    
+    // Format (max 10)
+    formatScore.textContent = `${scores.format}/10`;
+    formatProgress.style.width = `${(scores.format / 10) * 100}%`;
+}
+
+function displaySuggestions(suggestions) {
+    suggestionsList.innerHTML = '';
+    
+    if (suggestions.length === 0) {
+        suggestionsList.innerHTML = '<li>Your prompt looks good!</li>';
+        return;
+    }
+    
+    suggestions.forEach(suggestion => {
+        const li = document.createElement('li');
+        li.textContent = suggestion;
+        suggestionsList.appendChild(li);
+    });
+}
+
+function getScoreLabel(score) {
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    if (score >= 40) return 'Fair';
+    if (score >= 20) return 'Poor';
+    return 'Very Poor';
+}
+
+function copyToClipboard() {
+    const text = optimizedPromptText.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = 'Copy to Clipboard';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+    });
 }
 
 // Calculate Score (Mock)
@@ -146,7 +233,7 @@ function generateSuggestions(prompt) {
         suggestions.push('Request examples for clarity');
     }
     
-    return suggestions.length > 0 ? suggestions.join(', ') : 'Your prompt looks good!';
+    return suggestions;
 }
 
 // Generate Optimized Text (Mock)

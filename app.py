@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from utils.gemini import optimize_prompt
 from utils.score import calculate_prompt_score
 from utils.category import categorize_prompt
+from utils.pdf_generator import generate_pdf_report
 import sqlite3
 import os
 import json
 from datetime import datetime
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -229,6 +231,38 @@ def export_json():
         })
         response.headers['Content-Disposition'] = 'attachment; filename=prompt_history.json'
         return response
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route("/generate-pdf", methods=["POST"])
+def generate_pdf():
+    try:
+        data = request.get_json()
+        original_prompt = data.get("original_prompt", "")
+        optimized_prompt = data.get("optimized_prompt", "")
+        score = data.get("score", {})
+        category = data.get("category", "")
+        suggestions = data.get("suggestions", [])
+        
+        # Generate PDF
+        pdf_content = generate_pdf_report(
+            original_prompt,
+            optimized_prompt,
+            score,
+            category,
+            suggestions
+        )
+        
+        # Send file
+        buffer = BytesIO(pdf_content)
+        buffer.seek(0)
+        
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=f"prompt_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+            mimetype='application/pdf'
+        )
     except Exception as e:
         return jsonify({"error": str(e), "status": "error"}), 500
 

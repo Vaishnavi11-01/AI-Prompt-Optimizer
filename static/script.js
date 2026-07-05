@@ -8,6 +8,7 @@ const categoryValue = document.getElementById('category-value');
 const suggestionsList = document.getElementById('suggestions-list');
 const optimizedPromptText = document.getElementById('optimized-prompt-text');
 const copyBtn = document.getElementById('copy-btn');
+const pdfBtn = document.getElementById('pdf-btn');
 
 // Score breakdown elements
 const lengthScore = document.getElementById('length-score');
@@ -21,9 +22,15 @@ const contextProgress = document.getElementById('context-progress');
 const formatScore = document.getElementById('format-score');
 const formatProgress = document.getElementById('format-progress');
 
+// Store current optimization data for PDF generation
+let currentOptimizationData = null;
+
 // Event Listeners
 optimizeBtn.addEventListener('click', optimizePrompt);
 copyBtn.addEventListener('click', copyToClipboard);
+if (pdfBtn) {
+    pdfBtn.addEventListener('click', generatePDF);
+}
 
 // Optimize Prompt
 async function optimizePrompt() {
@@ -86,6 +93,15 @@ function displayResults(data, prompt) {
     const category = data.category;
     const suggestions = generateSuggestions(prompt);
     const optimizedText = data.optimized_prompt;
+    
+    // Store current optimization data for PDF generation
+    currentOptimizationData = {
+        original_prompt: prompt,
+        optimized_prompt: optimizedText,
+        score: scores,
+        category: category,
+        suggestions: suggestions
+    };
     
     // Display overall score
     scoreValue.textContent = Math.round(scores.total);
@@ -160,6 +176,47 @@ function copyToClipboard() {
         console.error('Failed to copy:', err);
         alert('Failed to copy to clipboard');
     });
+}
+
+async function generatePDF() {
+    if (!currentOptimizationData) {
+        alert('No optimization data available. Please optimize a prompt first.');
+        return;
+    }
+    
+    pdfBtn.disabled = true;
+    pdfBtn.textContent = 'Generating PDF...';
+    
+    try {
+        const response = await fetch('/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(currentOptimizationData)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to generate PDF');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `prompt_report_${new Date().toISOString().slice(0,10)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Failed to generate PDF: ' + error.message);
+    } finally {
+        pdfBtn.disabled = false;
+        pdfBtn.textContent = 'Download PDF Report';
+    }
 }
 
 // Calculate Score (Mock)

@@ -5,6 +5,7 @@ from utils.category import categorize_prompt
 import sqlite3
 import os
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -193,6 +194,41 @@ def get_stats():
             "monthly_usage": monthly_usage,
             "status": "success"
         })
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route("/export/json", methods=["GET"])
+def export_json():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT id, original_prompt, optimized_prompt, category, score, model_used, created_at
+            FROM prompts
+            ORDER BY created_at DESC
+        ''')
+        prompts = cursor.fetchall()
+        conn.close()
+        
+        export_data = []
+        for prompt in prompts:
+            export_data.append({
+                "id": prompt['id'],
+                "original_prompt": prompt['original_prompt'],
+                "optimized_prompt": prompt['optimized_prompt'],
+                "category": prompt['category'],
+                "score": prompt['score'],
+                "model_used": prompt['model_used'],
+                "created_at": prompt['created_at']
+            })
+        
+        response = jsonify({
+            "export_date": str(datetime.now()),
+            "total_prompts": len(export_data),
+            "prompts": export_data
+        })
+        response.headers['Content-Disposition'] = 'attachment; filename=prompt_history.json'
+        return response
     except Exception as e:
         return jsonify({"error": str(e), "status": "error"}), 500
 

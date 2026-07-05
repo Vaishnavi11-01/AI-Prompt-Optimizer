@@ -20,6 +20,10 @@ def get_db_connection():
 def home():
     return render_template("index.html")
 
+@app.route("/history")
+def history():
+    return render_template("history.html")
+
 @app.route("/optimize", methods=["POST"])
 def optimize():
     data = request.get_json()

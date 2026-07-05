@@ -130,5 +130,67 @@ def delete_prompt(prompt_id):
     except Exception as e:
         return jsonify({"error": str(e), "status": "error"}), 500
 
+@app.route("/stats", methods=["GET"])
+def get_stats():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Total prompts
+        cursor.execute('SELECT COUNT(*) as total FROM prompts')
+        total_prompts = cursor.fetchone()['total']
+        
+        # Average score
+        cursor.execute('SELECT AVG(score) as avg_score FROM prompts')
+        avg_score = cursor.fetchone()['avg_score'] or 0
+        
+        # Most used category
+        cursor.execute('''
+            SELECT category, COUNT(*) as count 
+            FROM prompts 
+            GROUP BY category 
+            ORDER BY count DESC 
+            LIMIT 1
+        ''')
+        most_used = cursor.fetchone()
+        most_used_category = most_used['category'] if most_used else 'N/A'
+        
+        # Category distribution
+        cursor.execute('''
+            SELECT category, COUNT(*) as count 
+            FROM prompts 
+            GROUP BY category
+        ''')
+        category_distribution = {}
+        for row in cursor.fetchall():
+            category_distribution[row['category']] = row['count']
+        
+        # Monthly usage (last 6 months)
+        cursor.execute('''
+            SELECT 
+                strftime('%Y-%m', created_at) as month,
+                COUNT(*) as count
+            FROM prompts
+            WHERE created_at >= date('now', '-6 months')
+            GROUP BY month
+            ORDER BY month
+        ''')
+        monthly_usage = {}
+        for row in cursor.fetchall():
+            monthly_usage[row['month']] = row['count']
+        
+        conn.close()
+        
+        return jsonify({
+            "total_prompts": total_prompts,
+            "average_score": round(avg_score, 2),
+            "most_used_category": most_used_category,
+            "category_distribution": category_distribution,
+            "monthly_usage": monthly_usage,
+            "status": "success"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)

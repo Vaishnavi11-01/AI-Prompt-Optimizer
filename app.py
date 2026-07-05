@@ -55,5 +55,76 @@ def optimize():
     except Exception as e:
         return jsonify({"error": str(e), "status": "error"}), 500
 
+@app.route("/history", methods=["GET"])
+def get_history():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT id, original_prompt, optimized_prompt, category, score, model_used, created_at
+            FROM prompts
+            ORDER BY created_at DESC
+        ''')
+        prompts = cursor.fetchall()
+        conn.close()
+        
+        history = []
+        for prompt in prompts:
+            history.append({
+                "id": prompt['id'],
+                "original_prompt": prompt['original_prompt'],
+                "optimized_prompt": prompt['optimized_prompt'],
+                "category": prompt['category'],
+                "score": prompt['score'],
+                "model_used": prompt['model_used'],
+                "created_at": prompt['created_at']
+            })
+        
+        return jsonify({"history": history, "status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route("/history/<int:prompt_id>", methods=["GET"])
+def get_prompt(prompt_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT id, original_prompt, optimized_prompt, category, score, model_used, created_at
+            FROM prompts
+            WHERE id = ?
+        ''', (prompt_id,))
+        prompt = cursor.fetchone()
+        conn.close()
+        
+        if not prompt:
+            return jsonify({"error": "Prompt not found", "status": "error"}), 404
+        
+        return jsonify({
+            "id": prompt['id'],
+            "original_prompt": prompt['original_prompt'],
+            "optimized_prompt": prompt['optimized_prompt'],
+            "category": prompt['category'],
+            "score": prompt['score'],
+            "model_used": prompt['model_used'],
+            "created_at": prompt['created_at'],
+            "status": "success"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route("/history/<int:prompt_id>", methods=["DELETE"])
+def delete_prompt(prompt_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM prompts WHERE id = ?', (prompt_id,))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({"message": "Prompt deleted successfully", "status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)

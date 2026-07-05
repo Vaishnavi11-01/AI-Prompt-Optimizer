@@ -22,6 +22,10 @@ async function optimizePrompt() {
         return;
     }
     
+    // Show loading state
+    optimizeBtn.disabled = true;
+    optimizeBtn.textContent = 'Optimizing...';
+    
     try {
         console.log('Sending request to /optimize');
         const response = await fetch("/optimize", {
@@ -48,7 +52,7 @@ async function optimizePrompt() {
         const score = data.score;
         const category = data.category;
         const suggestions = generateSuggestions(prompt);
-        const optimizedText = data.optimized_text;
+        const optimizedText = data.optimized_prompt;
         
         // Display results
         scoreValue.textContent = score;
@@ -64,6 +68,10 @@ async function optimizePrompt() {
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to optimize prompt: ' + error.message);
+    } finally {
+        // Reset button state
+        optimizeBtn.disabled = false;
+        optimizeBtn.textContent = 'Optimize';
     }
 }
 

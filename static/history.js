@@ -3,9 +3,18 @@ const searchInput = document.getElementById('search-input');
 const historyList = document.getElementById('history-list');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const exportBtn = document.getElementById('export-btn');
+const darkModeToggle = document.getElementById('dark-mode-toggle');
 
 let allHistory = [];
 let currentFilter = 'all';
+
+// Load dark mode preference from Local Storage
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    if (darkModeToggle) {
+        darkModeToggle.textContent = '☀️';
+    }
+}
 
 // Event Listeners
 searchInput.addEventListener('input', handleSearch);
@@ -15,6 +24,21 @@ filterButtons.forEach(btn => {
 
 if (exportBtn) {
     exportBtn.addEventListener('click', exportToJSON);
+}
+
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Save preference to Local Storage
+    localStorage.setItem('darkMode', isDarkMode);
+    
+    // Update toggle icon
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
 }
 
 // Load history on page load

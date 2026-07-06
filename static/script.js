@@ -25,11 +25,37 @@ const formatProgress = document.getElementById('format-progress');
 // Store current optimization data for PDF generation
 let currentOptimizationData = null;
 
+// Dark mode toggle
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+// Load dark mode preference from Local Storage
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    if (darkModeToggle) {
+        darkModeToggle.textContent = '☀️';
+    }
+}
+
 // Event Listeners
 optimizeBtn.addEventListener('click', optimizePrompt);
 copyBtn.addEventListener('click', copyToClipboard);
 if (pdfBtn) {
     pdfBtn.addEventListener('click', generatePDF);
+}
+
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Save preference to Local Storage
+    localStorage.setItem('darkMode', isDarkMode);
+    
+    // Update toggle icon
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
 }
 
 // Optimize Prompt

@@ -4,9 +4,34 @@ const averageScoreEl = document.getElementById('average-score');
 const mostUsedCategoryEl = document.getElementById('most-used-category');
 const categoryChart = document.getElementById('category-chart');
 const usageChart = document.getElementById('usage-chart');
+const darkModeToggle = document.getElementById('dark-mode-toggle');
 
 let categoryChartInstance = null;
 let usageChartInstance = null;
+
+// Load dark mode preference from Local Storage
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    if (darkModeToggle) {
+        darkModeToggle.textContent = '☀️';
+    }
+}
+
+// Dark mode toggle
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Save preference to Local Storage
+    localStorage.setItem('darkMode', isDarkMode);
+    
+    // Update toggle icon
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+}
 
 // Load stats on page load
 loadStats();

@@ -12,6 +12,7 @@ const originalPromptText = document.getElementById('original-prompt-text');
 const optimizedPromptText = document.getElementById('optimized-prompt-text');
 const suggestionsList = document.getElementById('suggestions-list');
 const improvementsList = document.getElementById('improvements-list');
+const diffViewer = document.getElementById('diff-viewer');
 const copyBtn = document.getElementById('copy-btn');
 const pdfBtn = document.getElementById('pdf-btn');
 
@@ -167,6 +168,9 @@ function displayResults(data, prompt) {
     // Display improvements
     displayImprovements(improvements);
     
+    // Display diff
+    displayDiff(data.diff);
+    
     // Display suggestions
     displaySuggestions(suggestions);
 }
@@ -221,6 +225,15 @@ function displayImprovements(improvements) {
         li.textContent = improvement;
         improvementsList.appendChild(li);
     });
+}
+
+function displayDiff(diffHtml) {
+    if (!diffHtml) {
+        diffViewer.innerHTML = '<p class="diff-placeholder">No diff available</p>';
+        return;
+    }
+    
+    diffViewer.innerHTML = diffHtml;
 }
 
 function getScoreLabel(score) {

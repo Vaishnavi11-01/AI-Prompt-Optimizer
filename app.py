@@ -4,6 +4,7 @@ from utils.score import calculate_prompt_score
 from utils.category import categorize_prompt
 from utils.pdf_generator import generate_pdf_report
 from utils.improvement_analyzer import analyze_improvements
+from utils.diff_generator import generate_inline_diff
 import sqlite3
 import os
 import json
@@ -59,6 +60,9 @@ def optimize():
         # Analyze improvements
         improvements = analyze_improvements(prompt, optimized_prompt, original_scores, optimized_scores)
         
+        # Generate diff
+        diff_html = generate_inline_diff(prompt, optimized_prompt)
+        
         # Save to database
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -76,6 +80,7 @@ def optimize():
             "improvement": improvement,
             "category": category,
             "improvements": improvements,
+            "diff": diff_html,
             "status": "success"
         })
     except Exception as e:

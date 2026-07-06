@@ -31,27 +31,57 @@
             <section class="results-section hidden" id="results-section">
                 <h2>Optimization Results</h2>
                 
-                <div class="dashboard-grid">
-                    <!-- Overall Score Card -->
-                    <div class="score-card">
-                        <h3>Overall Score</h3>
+                <!-- Score Comparison -->
+                <div class="score-comparison">
+                    <div class="comparison-card original">
+                        <h3>Original Score</h3>
                         <div class="score-circle">
-                            <span id="score-value">0</span>
+                            <span id="original-score-value">0</span>
                             <span class="score-max">/100</span>
                         </div>
-                        <div class="score-label" id="score-label">Poor</div>
+                        <div class="score-label" id="original-score-label">Poor</div>
                     </div>
+                    
+                    <div class="improvement-card">
+                        <h3>Improvement</h3>
+                        <div class="improvement-value" id="improvement-value">+0</div>
+                        <div class="improvement-label">points</div>
+                    </div>
+                    
+                    <div class="comparison-card optimized">
+                        <h3>Optimized Score</h3>
+                        <div class="score-circle">
+                            <span id="optimized-score-value">0</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                        <div class="score-label" id="optimized-score-label">Poor</div>
+                    </div>
+                </div>
 
-                    <!-- Category Card -->
-                    <div class="category-card">
-                        <h3>Category</h3>
-                        <div class="category-badge" id="category-value">General</div>
+                <!-- Category -->
+                <div class="category-display">
+                    <h3>Category</h3>
+                    <div class="category-badge" id="category-value">General</div>
+                </div>
+
+                <!-- Side-by-Side Comparison -->
+                <div class="comparison-section">
+                    <h3>Prompt Comparison</h3>
+                    <div class="comparison-grid">
+                        <div class="comparison-column original">
+                            <h4>Original</h4>
+                            <div class="comparison-text" id="original-prompt-text"></div>
+                        </div>
+                        <div class="comparison-column optimized">
+                            <h4>Optimized</h4>
+                            <div class="comparison-text" id="optimized-prompt-text"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Detailed Score Breakdown -->
                 <div class="score-breakdown">
-                    <h3>Score Breakdown</h3>
+                    <h3>Optimized Score Breakdown</h3>
                     
                     <div class="score-item">
                         <div class="score-item-header">
@@ -112,16 +142,10 @@
                     </ul>
                 </div>
 
-                <!-- Optimized Text -->
-                <div class="optimized-text-card">
-                    <h3>Optimized Prompt</h3>
-                    <div class="optimized-text-content">
-                        <p id="optimized-prompt-text"></p>
-                        <div class="action-buttons">
-                            <button class="btn-secondary" id="copy-btn">Copy to Clipboard</button>
-                            <button class="btn-secondary" id="pdf-btn">Download PDF Report</button>
-                        </div>
-                    </div>
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-secondary" id="copy-btn">Copy Optimized Prompt</button>
+                    <button class="btn-secondary" id="pdf-btn">Download PDF Report</button>
                 </div>
             </section>
         </main>

@@ -2,11 +2,15 @@
 const promptInput = document.getElementById('prompt-input');
 const optimizeBtn = document.getElementById('optimize-btn');
 const resultsSection = document.getElementById('results-section');
-const scoreValue = document.getElementById('score-value');
-const scoreLabel = document.getElementById('score-label');
+const originalScoreValue = document.getElementById('original-score-value');
+const originalScoreLabel = document.getElementById('original-score-label');
+const optimizedScoreValue = document.getElementById('optimized-score-value');
+const optimizedScoreLabel = document.getElementById('optimized-score-label');
+const improvementValue = document.getElementById('improvement-value');
 const categoryValue = document.getElementById('category-value');
-const suggestionsList = document.getElementById('suggestions-list');
+const originalPromptText = document.getElementById('original-prompt-text');
 const optimizedPromptText = document.getElementById('optimized-prompt-text');
+const suggestionsList = document.getElementById('suggestions-list');
 const copyBtn = document.getElementById('copy-btn');
 const pdfBtn = document.getElementById('pdf-btn');
 
@@ -115,7 +119,9 @@ async function optimizePrompt() {
 }
 
 function displayResults(data, prompt) {
-    const scores = data.score;
+    const originalScores = data.original_score;
+    const optimizedScores = data.optimized_score;
+    const improvement = data.improvement;
     const category = data.category;
     const suggestions = generateSuggestions(prompt);
     const optimizedText = data.optimized_prompt;
@@ -124,26 +130,39 @@ function displayResults(data, prompt) {
     currentOptimizationData = {
         original_prompt: prompt,
         optimized_prompt: optimizedText,
-        score: scores,
+        original_score: originalScores,
+        optimized_score: optimizedScores,
+        improvement: improvement,
         category: category,
         suggestions: suggestions
     };
     
-    // Display overall score
-    scoreValue.textContent = Math.round(scores.total);
-    scoreLabel.textContent = getScoreLabel(scores.total);
+    // Display original score
+    originalScoreValue.textContent = Math.round(originalScores.total);
+    originalScoreLabel.textContent = getScoreLabel(originalScores.total);
+    
+    // Display optimized score
+    optimizedScoreValue.textContent = Math.round(optimizedScores.total);
+    optimizedScoreLabel.textContent = getScoreLabel(optimizedScores.total);
+    
+    // Display improvement
+    improvementValue.textContent = improvement >= 0 ? `+${improvement}` : improvement;
+    improvementValue.style.color = improvement >= 0 ? '#10b981' : '#ef4444';
     
     // Display category
     categoryValue.textContent = category;
     
-    // Display score breakdown
-    displayScoreBreakdown(scores);
+    // Display original prompt
+    originalPromptText.textContent = prompt;
+    
+    // Display optimized prompt
+    optimizedPromptText.textContent = optimizedText;
+    
+    // Display score breakdown (for optimized prompt)
+    displayScoreBreakdown(optimizedScores);
     
     // Display suggestions
     displaySuggestions(suggestions);
-    
-    // Display optimized text
-    optimizedPromptText.textContent = optimizedText;
 }
 
 function displayScoreBreakdown(scores) {

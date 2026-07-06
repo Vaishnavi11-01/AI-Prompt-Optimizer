@@ -40,11 +40,19 @@ def optimize():
         return jsonify({"error": "No prompt provided"}), 400
     
     try:
+        # Calculate original score
+        original_scores = calculate_prompt_score(prompt)
+        
         # Optimize the prompt using Gemini
         optimized_prompt = optimize_prompt(prompt)
         
-        # Calculate score and category
-        scores = calculate_prompt_score(prompt)
+        # Calculate optimized score
+        optimized_scores = calculate_prompt_score(optimized_prompt)
+        
+        # Calculate improvement
+        improvement = optimized_scores['total'] - original_scores['total']
+        
+        # Categorize the original prompt
         category = categorize_prompt(prompt)
         
         # Save to database
@@ -53,13 +61,15 @@ def optimize():
         cursor.execute('''
             INSERT INTO prompts (original_prompt, optimized_prompt, category, score, model_used)
             VALUES (?, ?, ?, ?, ?)
-        ''', (prompt, optimized_prompt, category, scores['total'], 'gemini-1.5-flash'))
+        ''', (prompt, optimized_prompt, category, optimized_scores['total'], 'gemini-1.5-flash'))
         conn.commit()
         conn.close()
         
         return jsonify({
             "optimized_prompt": optimized_prompt,
-            "score": scores,
+            "original_score": original_scores,
+            "optimized_score": optimized_scores,
+            "improvement": improvement,
             "category": category,
             "status": "success"
         })
@@ -240,7 +250,9 @@ def generate_pdf():
         data = request.get_json()
         original_prompt = data.get("original_prompt", "")
         optimized_prompt = data.get("optimized_prompt", "")
-        score = data.get("score", {})
+        original_score = data.get("original_score", {})
+        optimized_score = data.get("optimized_score", {})
+        improvement = data.get("improvement", 0)
         category = data.get("category", "")
         suggestions = data.get("suggestions", [])
         
@@ -248,7 +260,9 @@ def generate_pdf():
         pdf_content = generate_pdf_report(
             original_prompt,
             optimized_prompt,
-            score,
+            original_score,
+            optimized_score,
+            improvement,
             category,
             suggestions
         )

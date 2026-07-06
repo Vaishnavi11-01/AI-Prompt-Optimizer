@@ -6,14 +6,16 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from datetime import datetime
 
-def generate_pdf_report(original_prompt, optimized_prompt, original_score, category, suggestions):
+def generate_pdf_report(original_prompt, optimized_prompt, original_score, optimized_score, improvement, category, suggestions):
     """
     Generate a PDF report for prompt optimization.
     
     Args:
         original_prompt (str): The original prompt
         optimized_prompt (str): The optimized prompt
-        original_score (dict): Score breakdown with total
+        original_score (dict): Original score breakdown with total
+        optimized_score (dict): Optimized score breakdown with total
+        improvement (float): Score improvement
         category (str): Prompt category
         suggestions (list): List of suggestions
     
@@ -69,34 +71,30 @@ def generate_pdf_report(original_prompt, optimized_prompt, original_score, categ
     story.append(Paragraph(f"<b>Category:</b> {category}", normal_style))
     story.append(Spacer(1, 0.2*inch))
     
-    # Score Information
-    total_score = original_score.get('total', 0)
-    story.append(Paragraph(f"<b>Overall Score:</b> {round(total_score)}/100", normal_style))
-    story.append(Spacer(1, 0.2*inch))
-    
-    # Score Breakdown Table
-    score_data = [
-        ['Metric', 'Score', 'Maximum'],
-        ['Length', str(original_score.get('length', 0)), '20'],
-        ['Clarity', str(original_score.get('clarity', 0)), '15'],
-        ['Specificity', str(original_score.get('specificity', 0)), '15'],
-        ['Context', str(original_score.get('context', 0)), '10'],
-        ['Format', str(original_score.get('format', 0)), '10'],
+    # Score Comparison Table
+    score_comparison_data = [
+        ['Metric', 'Original', 'Optimized', 'Improvement'],
+        ['Total Score', str(round(original_score.get('total', 0))), str(round(optimized_score.get('total', 0))), f"+{round(improvement)}" if improvement >= 0 else str(round(improvement))],
+        ['Length', str(original_score.get('length', 0)), str(optimized_score.get('length', 0)), str(optimized_score.get('length', 0) - original_score.get('length', 0))],
+        ['Clarity', str(original_score.get('clarity', 0)), str(optimized_score.get('clarity', 0)), str(optimized_score.get('clarity', 0) - original_score.get('clarity', 0))],
+        ['Specificity', str(original_score.get('specificity', 0)), str(optimized_score.get('specificity', 0)), str(optimized_score.get('specificity', 0) - original_score.get('specificity', 0))],
+        ['Context', str(original_score.get('context', 0)), str(optimized_score.get('context', 0)), str(optimized_score.get('context', 0) - original_score.get('context', 0))],
+        ['Format', str(original_score.get('format', 0)), str(optimized_score.get('format', 0)), str(optimized_score.get('format', 0) - original_score.get('format', 0))],
     ]
     
-    score_table = Table(score_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
-    score_table.setStyle(TableStyle([
+    score_comparison_table = Table(score_comparison_data, colWidths=[2*inch, 1.2*inch, 1.2*inch, 1.2*inch])
+    score_comparison_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6366f1')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
     ]))
     
-    story.append(score_table)
+    story.append(score_comparison_table)
     story.append(Spacer(1, 0.3*inch))
     
     # Original Prompt

@@ -3,6 +3,7 @@ from utils.gemini import optimize_prompt
 from utils.score import calculate_prompt_score
 from utils.category import categorize_prompt
 from utils.pdf_generator import generate_pdf_report
+from utils.improvement_analyzer import analyze_improvements
 import sqlite3
 import os
 import json
@@ -55,6 +56,9 @@ def optimize():
         # Categorize the original prompt
         category = categorize_prompt(prompt)
         
+        # Analyze improvements
+        improvements = analyze_improvements(prompt, optimized_prompt, original_scores, optimized_scores)
+        
         # Save to database
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -71,6 +75,7 @@ def optimize():
             "optimized_score": optimized_scores,
             "improvement": improvement,
             "category": category,
+            "improvements": improvements,
             "status": "success"
         })
     except Exception as e:

@@ -11,6 +11,7 @@ const categoryValue = document.getElementById('category-value');
 const originalPromptText = document.getElementById('original-prompt-text');
 const optimizedPromptText = document.getElementById('optimized-prompt-text');
 const suggestionsList = document.getElementById('suggestions-list');
+const improvementsList = document.getElementById('improvements-list');
 const copyBtn = document.getElementById('copy-btn');
 const pdfBtn = document.getElementById('pdf-btn');
 
@@ -124,6 +125,7 @@ function displayResults(data, prompt) {
     const improvement = data.improvement;
     const category = data.category;
     const suggestions = generateSuggestions(prompt);
+    const improvements = data.improvements || [];
     const optimizedText = data.optimized_prompt;
     
     // Store current optimization data for PDF generation
@@ -134,7 +136,8 @@ function displayResults(data, prompt) {
         optimized_score: optimizedScores,
         improvement: improvement,
         category: category,
-        suggestions: suggestions
+        suggestions: suggestions,
+        improvements: improvements
     };
     
     // Display original score
@@ -160,6 +163,9 @@ function displayResults(data, prompt) {
     
     // Display score breakdown (for optimized prompt)
     displayScoreBreakdown(optimizedScores);
+    
+    // Display improvements
+    displayImprovements(improvements);
     
     // Display suggestions
     displaySuggestions(suggestions);
@@ -199,6 +205,21 @@ function displaySuggestions(suggestions) {
         const li = document.createElement('li');
         li.textContent = suggestion;
         suggestionsList.appendChild(li);
+    });
+}
+
+function displayImprovements(improvements) {
+    improvementsList.innerHTML = '';
+    
+    if (improvements.length === 0) {
+        improvementsList.innerHTML = '<li>No specific improvements detected</li>';
+        return;
+    }
+    
+    improvements.forEach(improvement => {
+        const li = document.createElement('li');
+        li.textContent = improvement;
+        improvementsList.appendChild(li);
     });
 }
 

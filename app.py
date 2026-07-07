@@ -37,6 +37,7 @@ def stats():
 def optimize():
     data = request.get_json()
     prompt = data.get("prompt", "")
+    model_name = data.get("model", "flash")  # Default to flash
     
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
@@ -45,8 +46,8 @@ def optimize():
         # Calculate original score
         original_scores = calculate_prompt_score(prompt)
         
-        # Optimize the prompt using Gemini
-        optimized_prompt = optimize_prompt(prompt)
+        # Optimize the prompt using Gemini with selected model
+        optimized_prompt = optimize_prompt(prompt, model_name)
         
         # Calculate optimized score
         optimized_scores = calculate_prompt_score(optimized_prompt)
@@ -69,7 +70,7 @@ def optimize():
         cursor.execute('''
             INSERT INTO prompts (original_prompt, optimized_prompt, category, score, model_used)
             VALUES (?, ?, ?, ?, ?)
-        ''', (prompt, optimized_prompt, category, optimized_scores['total'], 'gemini-1.5-flash'))
+        ''', (prompt, optimized_prompt, category, optimized_scores['total'], f'gemini-1.5-{model_name}'))
         conn.commit()
         conn.close()
         
@@ -81,6 +82,7 @@ def optimize():
             "category": category,
             "improvements": improvements,
             "diff": diff_html,
+            "model_used": f'gemini-1.5-{model_name}',
             "status": "success"
         })
     except Exception as e:

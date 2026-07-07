@@ -20,6 +20,13 @@
         <main>
             <section class="input-section">
                 <h2>Enter Prompt</h2>
+                <div class="model-selector">
+                    <label for="model-select">AI Model:</label>
+                    <select id="model-select">
+                        <option value="flash">Gemini Flash (Fast)</option>
+                        <option value="pro">Gemini Pro (High Quality)</option>
+                    </select>
+                </div>
                 <textarea 
                     id="prompt-input" 
                     placeholder="Type or paste your prompt here..."

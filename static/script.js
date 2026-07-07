@@ -1,5 +1,6 @@
 // DOM Elements
 const promptInput = document.getElementById('prompt-input');
+const modelSelect = document.getElementById('model-select');
 const optimizeBtn = document.getElementById('optimize-btn');
 const resultsSection = document.getElementById('results-section');
 const originalScoreValue = document.getElementById('original-score-value');
@@ -67,9 +68,11 @@ function toggleDarkMode() {
 // Optimize Prompt
 async function optimizePrompt() {
     const prompt = promptInput.value.trim();
+    const model = modelSelect.value;
     
     console.log('Optimize button clicked');
     console.log('Prompt:', prompt);
+    console.log('Model:', model);
     
     if (!prompt) {
         alert('Please enter a prompt to optimize');
@@ -88,7 +91,8 @@ async function optimizePrompt() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                prompt: prompt
+                prompt: prompt,
+                model: model
             })
         });
         
